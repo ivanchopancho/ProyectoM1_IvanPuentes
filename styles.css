@@ -1,0 +1,280 @@
+/* =========================
+   VARIABLES
+   ========================= */
+
+:root {
+  --background: #111318;
+  --surface: #1b1e26;
+  --surface-hover: #242832;
+
+  --text: #f4f4f5;
+  --text-muted: #a1a1aa;
+
+  --accent: #8b5cf6;
+  --accent-hover: #7c3aed;
+
+  --border: #30343d;
+
+  --radius: 0.75rem;
+}
+
+/* =========================
+   RESET BÁSICO
+   ========================= */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+
+  background-color: var(--background);
+  color: var(--text);
+
+  font-family: Arial, sans-serif;
+  line-height: 1.5;
+}
+
+/* =========================
+   HEADER
+   ========================= */
+
+header {
+  padding: 3rem 5%;
+  text-align: center;
+}
+
+header h1 {
+  margin-bottom: 0.5rem;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+}
+
+header p {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+/* =========================
+   MAIN
+   ========================= */
+
+main {
+  width: min(90%, 75rem);
+  margin: 0 auto;
+}
+
+/* =========================
+   CONFIGURACIÓN
+   ========================= */
+
+section {
+  margin-bottom: 3rem;
+}
+
+section h2 {
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+section:first-child {
+  display: flex;
+  align-items: end;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  padding: 1.5rem;
+
+  background-color: var(--surface);
+  border: 0.0625rem solid var(--border);
+  border-radius: var(--radius);
+}
+
+section:first-child h2 {
+  width: 100%;
+}
+
+/* =========================
+   SELECTOR
+   ========================= */
+
+section:first-child div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+label {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+select {
+  min-width: 10rem;
+
+  padding: 0.75rem 1rem;
+
+  background-color: var(--background);
+  color: var(--text);
+
+  border: 0.0625rem solid var(--border);
+  border-radius: 0.5rem;
+
+  font: inherit;
+  cursor: pointer;
+}
+
+/* =========================
+   BOTÓN
+   ========================= */
+
+button {
+  padding: 0.75rem 1.25rem;
+
+  background-color: var(--accent);
+  color: white;
+
+  border: none;
+  border-radius: 0.5rem;
+
+  font: inherit;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+button:hover {
+  background-color: var(--accent-hover);
+  transform: translateY(-0.1rem);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* =========================
+   FOCO
+   ========================= */
+
+button:focus-visible,
+select:focus-visible {
+  outline: 0.1875rem solid var(--accent);
+  outline-offset: 0.2rem;
+}
+
+/* =========================
+   PALETA
+   ========================= */
+
+#palette {
+  display: grid;
+
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+
+  gap: 1rem;
+}
+
+/* =========================
+   TARJETAS DE COLOR
+   ========================= */
+
+.color-card {
+  min-height: 15rem;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+
+  overflow: hidden;
+
+  background-color: var(--surface);
+
+  border: 0.0625rem solid var(--border);
+  border-radius: var(--radius);
+}
+
+.color-preview {
+  flex: 1;
+}
+
+.color-code {
+  padding: 1rem;
+
+  background-color: var(--surface);
+
+  font-family: monospace;
+  font-size: 1rem;
+  font-weight: bold;
+
+  text-align: center;
+}
+
+/* =========================
+   FOOTER
+   ========================= */
+
+footer {
+  padding: 2rem 5%;
+
+  color: var(--text-muted);
+
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+/* =========================
+   TOAST
+   ========================= */
+
+#toast {
+  position: fixed;
+
+  bottom: 2rem;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  padding: 0.75rem 1.25rem;
+
+  background-color: var(--surface);
+  color: var(--text);
+
+  border: 0.0625rem solid var(--border);
+  border-radius: 0.5rem;
+
+  opacity: 0;
+  pointer-events: none;
+
+  transition: opacity 0.3s ease;
+}
+
+#toast.visible {
+  opacity: 1;
+}
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 40rem) {
+  section:first-child {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  section:first-child div,
+  select,
+  button {
+    width: 100%;
+  }
+
+  #palette {
+    grid-template-columns: 1fr;
+  }
+}

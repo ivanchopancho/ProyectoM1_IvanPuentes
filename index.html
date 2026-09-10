@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Generador de Paletas</title>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>Generador de Paletas</h1>
+
+        <p>
+            Crea paletas de colores basadas en armonías cromáticas y criterios estéticos.
+        </p>
+    </header>
+
+    <main>
+
+        <section aria-labelledby="palette-settings-title">
+
+            <h2 id="palette-settings-title">
+                Configuración de la paleta
+            </h2>
+
+            <div class="setting">
+
+                <label for="palette-size">
+                    Cantidad de colores
+                </label>
+
+                <select id="palette-size" name="palette-size">
+                    <option value="6">6 colores</option>
+                    <option value="8">8 colores</option>
+                    <option value="9">9 colores</option>
+                </select>
+
+            </div>
+
+
+            <div class="setting">
+
+                <label for="harmony">
+                    Armonía cromática
+                </label>
+
+                <select id="harmony" name="harmony">
+
+                    <option value="monochromatic">
+                        Monocromática
+                    </option>
+
+                    <option value="analogous">
+                        Análoga
+                    </option>
+
+                    <option value="complementary">
+                        Complementaria
+                    </option>
+
+                    <option value="split-complementary">
+                        Split-complementaria
+                    </option>
+
+                    <option value="triadic">
+                        Triádica
+                    </option>
+
+                    <option value="tetradic">
+                        Tetrádica
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="setting">
+
+                <label for="style">
+                    Estilo
+                </label>
+
+                <select id="style" name="style">
+
+                    <option value="vibrant">
+                        Vibrante
+                    </option>
+
+                    <option value="pastel">
+                        Pastel
+                    </option>
+
+                    <option value="dark">
+                        Oscura
+                    </option>
+
+                    <option value="light">
+                        Clara
+                    </option>
+
+                    <option value="muted">
+                        Apagada
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <button type="button" id="generate-button">
+                Generar paleta
+            </button>
+
+        </section>
+
+
+        <section aria-labelledby="palette-title">
+
+            <h2 id="palette-title">
+                Tu paleta
+            </h2>
+
+            <div id="palette" aria-live="polite" aria-label="Colores de la paleta">
+                <!-- Los colores serán generados por JavaScript -->
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+
+        <p>
+            Generador de paletas de colores
+        </p>
+
+    </footer>
+
+
+    <div id="toast" role="status" aria-live="polite" aria-atomic="true">
+    </div>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
+```
