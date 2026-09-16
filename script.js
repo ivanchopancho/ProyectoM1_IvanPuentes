@@ -29,8 +29,43 @@ function generatePalette() {
         style.value
     );
 
+
     const colorCards = colors.map((color) => {
-        return `<div class="color-card" style="background-color: ${color}"></div>`;
+        return `
+            <article class="color-card">
+
+            <div
+                class="color-preview"
+                style="background-color: ${color.hsl}">
+            </div>
+
+            <div class="color-info">
+
+                <button
+                    class="color-code"
+                    data-color="${color.hex}">
+                    <span>HEX</span>
+                    ${color.hex}
+                </button>
+
+                <button
+                    class="color-code"
+                    data-color="rgb(${color.rgb.join(", ")})">
+                    <span>RGB</span>
+                    ${color.rgb.join(", ")}
+                </button>
+
+                <button
+                    class="color-code"
+                    data-color="${color.hsl}">
+                    <span>HSL</span>
+                    ${color.hsl}
+                </button>
+
+            </div>
+
+        </article>
+                `;
     });
 
     palette.innerHTML = colorCards.join("");
@@ -45,6 +80,14 @@ function generatePalette() {
 generateButton.addEventListener("click", () => {
     palette.textContent = "¡Has generado una paleta!"
     generatePalette()
+});
+
+palette.addEventListener("click", (event) => {
+    const button = event.target.closest(".color-code");
+
+    if (!button) return;
+
+    navigator.clipboard.writeText(button.dataset.color);
 });
 
 
@@ -117,9 +160,47 @@ const harmonyRules = {
 };
 
 
+
+//FUNCIONES DE CONVERSION
 function hueToColor(hue) {
     return `hsl(${hue}, 80%, 50%)`;
 }
+
+function hslToRgb(h, s, l) {
+    s /= 100;
+    l /= 100;
+
+    const chroma = (1 - Math.abs(2 * l - 1)) * s;
+    const huePrime = h / 60;
+
+    const channel = (n) => {
+        const k = (n + huePrime) % 6;
+        return chroma * Math.max(
+            0,
+            Math.min(k, 4 - k, 1)
+        );
+    };
+
+    const m = l - chroma / 2;
+
+    const r = Math.round((channel(0) + m) * 255);
+    const g = Math.round((channel(4) + m) * 255);
+    const b = Math.round((channel(2) + m) * 255);
+
+    return [r, g, b];
+}
+
+function rgbToHex(r, g, b) {
+    const rgb = [r, g, b];
+    const hex = [];
+    for (let i = 0; i < rgb.length; i++) {
+        const current = rgb[i].toString(16).padStart(2, "0");
+        hex.push(current)
+    }
+    return `#${hex.join("")}`;
+}
+
+
 
 
 //restricciones relacionadas con el estilo
@@ -189,11 +270,21 @@ function generateColors(hues, distribution, style) {
                 styleRule.lightness[0],
                 styleRule.lightness[1]
             )
-            const color = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+
+            const rgb = hslToRgb(hue, saturation, lightness);
+            const hex = rgbToHex(rgb[0], rgb[1], rgb[2]);
+
+            const color = {
+                hsl: `hsl(${hue}, ${saturation}%, ${lightness}%)`,
+                rgb: rgb,
+                hex: hex
+            };
             colors.push(color);
         }
 
     }
+
+
 
 
     return colors;
@@ -212,3 +303,6 @@ console.log(
         "vibrant"
     )
 );
+
+
+
