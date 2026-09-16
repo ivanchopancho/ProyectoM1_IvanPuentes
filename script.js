@@ -4,71 +4,64 @@ const palette = document.querySelector("#palette");
 const toast = document.querySelector("#toast");
 const style = document.querySelector("#style")
 
+let currentColors = [];
+
+
 
 
 
 
 
 function generatePalette() {
-    const baseHue = Math.floor(Math.random() * 360);
-    //harmony.value consulta el tag con id harmony por su value. Luego compara ese valor con el objeto harmonyRules para obtener la función para la paleta indicada
 
-    const harmonyFunction = harmonyRules[harmony.value];
-
-    //hues almacena la lista de hues proporcionales de acuerdo a su criterio estetico
-    const hues = harmonyFunction(baseHue);
-
-    const distribution = distributeColors(
-        Number(paletteSize.value),
-        hues
-    );
-
-    const colors = generateColors(
-        hues,
-        distribution,
-        style.value
-    );
+    let colors;
 
 
-    const colorCards = colors.map((color) => {
-        return `
-            <article class="color-card">
 
-            <div
-                class="color-preview"
-                style="background-color: ${color.hsl}">
-            </div>
+    if (harmony.value === "random") {
 
-            <div class="color-info">
+        colors = generateRandomColors(paletteSize.value)
 
-                <button
-                    class="color-code"
-                    data-color="${color.hex}">
-                    <span>HEX</span>
-                    ${color.hex}
-                </button>
+    } else {
+        const baseHue = Math.floor(Math.random() * 360);
+        //harmony.value consulta el tag con id harmony por su value. Luego compara ese valor con el objeto harmonyRules para obtener la función para la paleta indicada
+        const harmonyFunction = harmonyRules[harmony.value];
+        //hues almacena la lista de hues proporcionales de acuerdo a su criterio estetico
+        const hues = harmonyFunction(baseHue);
 
-                <button
-                    class="color-code"
-                    data-color="rgb(${color.rgb.join(", ")})">
-                    <span>RGB</span>
-                    ${color.rgb.join(", ")}
-                </button>
+        const distribution = distributeColors(
+            Number(paletteSize.value),
+            hues
+        );
 
-                <button
-                    class="color-code"
-                    data-color="${color.hsl}">
-                    <span>HSL</span>
-                    ${color.hsl}
-                </button>
 
-            </div>
+        colors = generateColors(
+            hues,
+            distribution,
+            style.value
+        );
 
-        </article>
-                `;
-    });
+    }
 
-    palette.innerHTML = colorCards.join("");
+    for (let i = 0; i < colors.length; i++) {
+        if (currentColors[i]?.locked) {
+            colors[i] = currentColors[i];
+        }
+    }
+
+    currentColors = colors;
+    renderPalette();
+
+
+
+
+
+
+
+
+
+
+
 
     //console.log(colorCards);
 
@@ -76,6 +69,21 @@ function generatePalette() {
     //console.log(hues);
 
 }
+
+//LISTENERS
+
+palette.addEventListener("click", (event) => {
+
+    const button = event.target.closest(".lock-button");
+
+    if (!button) return;
+
+    const index = Number(button.dataset.index);
+
+    currentColors[index].locked = !currentColors[index].locked;
+
+    renderPalette();
+});
 
 generateButton.addEventListener("click", () => {
     palette.textContent = "¡Has generado una paleta!"
@@ -89,7 +97,6 @@ palette.addEventListener("click", (event) => {
 
     navigator.clipboard.writeText(button.dataset.color);
 });
-
 
 
 
@@ -149,6 +156,11 @@ function splitComplementary(baseHue) {
     ];
 }
 
+function random(paletteSize) {
+    return generateRandomColors(paletteSize);
+
+}
+
 //todas las reglas armónicas están en este objeto para fácil acceso. 
 const harmonyRules = {
     monochromatic: monochromatic,
@@ -162,10 +174,7 @@ const harmonyRules = {
 
 
 //FUNCIONES DE CONVERSION
-function hueToColor(hue) {
-    return `hsl(${hue}, 80%, 50%)`;
-}
-
+//recibe 3 numeros, devuelve una lista con 3 elementos
 function hslToRgb(h, s, l) {
     s /= 100;
     l /= 100;
@@ -190,6 +199,8 @@ function hslToRgb(h, s, l) {
     return [r, g, b];
 }
 
+
+//recibe 3 numeros, devuelve un string
 function rgbToHex(r, g, b) {
     const rgb = [r, g, b];
     const hex = [];
@@ -245,10 +256,41 @@ function distributeColors(paletteSize, hues) {
 
 
 //random in range permite usar Math.random para generar un numero aleatorio dentro de un intervalo cerrado
-//esta funcion es horrible. javascript necesita este comprtamiento de forma nativa
+//esta funcion es horrible. javascript necesita este comportamiento de forma nativa
 function randomInRange(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min
 }
+
+
+//FUNCIONES DE GENERACION
+//recibe un string y devuelve un objeto color random
+function generateRandomColors(paletteSize) {
+    const colors = [];
+
+    for (let i = 0; i < Number(paletteSize); i++) {
+        const hue = randomInRange(0, 359);
+        const saturation = randomInRange(0, 100);
+        const lightness = randomInRange(0, 100);
+
+        const rgb = hslToRgb(hue, saturation, lightness);
+        const hex = rgbToHex(rgb[0], rgb[1], rgb[2]);
+
+        const color = {
+            hsl: `hsl(${hue}, ${saturation}%, ${lightness}%)`,
+            rgb: rgb,
+            hex: hex,
+            locked: false
+        };
+        colors.push(color)
+    }
+
+
+    return colors
+
+}
+
+console.log(generateRandomColors("7"))
+
 
 //devuelve un array de strings que son colores en formato hsl basado en los hues elegidos por el criterio armonico, las variaciones y el estilo
 function generateColors(hues, distribution, style) {
@@ -259,7 +301,7 @@ function generateColors(hues, distribution, style) {
         const hue = hues[i]
 
         for (let j = 0; j < distribution[i]; j++) {
-            //colorEnHsl = [hue, dos numeros randoms de s y l que consultan los rangos de style]
+            //colorEnHsl = [hue, dos numeros randoms de s y l que consultan los rangos en styleRule]
             //colors.push(colorEnHsl)
 
             const saturation = randomInRange(
@@ -277,32 +319,71 @@ function generateColors(hues, distribution, style) {
             const color = {
                 hsl: `hsl(${hue}, ${saturation}%, ${lightness}%)`,
                 rgb: rgb,
-                hex: hex
+                hex: hex,
+                locked: false
             };
             colors.push(color);
         }
-
     }
-
-
-
-
     return colors;
+}
 
 
+
+
+//recibe la lista de current colors 
+function renderPalette() {
+
+    const colorCards = currentColors.map((color, index) => {
+        return `
+            <article class="color-card">
+
+                <div 
+                    class="color-preview"
+                    style="background-color: ${color.hsl}">
+                </div>
+
+                <div class="color-info">
+
+                    <button 
+                        class="lock-button"
+                        data-index="${index}"
+                        aria-label="${color.locked ? "Desbloquear color" : "Bloquear color"}">
+                        ${color.locked ? "🔒" : "🔓"}
+                    </button>
+                
+
+                    <button 
+                        class="color-code"
+                        data-color="${color.hex}">
+                        <span>HEX</span>
+                        ${color.hex}
+                    </button>
+
+                    <button 
+                        class="color-code"
+                        data-color="rgb(${color.rgb.join(", ")})">
+                        <span>RGB</span>
+                        ${color.rgb.join(", ")}
+                    </button>
+
+                    <button 
+                        class="color-code"
+                        data-color="${color.hsl}">
+                        <span>HSL</span>
+                        ${color.hsl}
+                    </button>
+
+                </div>
+
+            </article>
+        `;
+    });
+
+    palette.innerHTML = colorCards.join("");
 }
 
 //console.log(distributeColors(8, [240, 30, 90]));
 //console.log(distributeColors(6, [240, 30, 90]));
 //console.log(distributeColors(9, [240, 30, 90]));
-
-console.log(
-    generateColors(
-        [240, 30, 90],
-        [3, 3, 2],
-        "vibrant"
-    )
-);
-
-
 
