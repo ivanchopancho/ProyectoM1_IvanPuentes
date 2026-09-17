@@ -2,7 +2,9 @@ const paletteSize = document.querySelector("#palette-size");
 const generateButton = document.querySelector("#generate-button");
 const palette = document.querySelector("#palette");
 const toast = document.querySelector("#toast");
-const style = document.querySelector("#style")
+const style = document.querySelector("#style");
+const harmony = document.querySelector("#harmony")
+const glitterToggle = document.querySelector("#glitter-toggle");
 
 let currentColors = [];
 
@@ -70,8 +72,11 @@ function generatePalette() {
 
 }
 
-//LISTENERS
 
+
+
+
+//LISTENERS
 palette.addEventListener("click", (event) => {
 
     const button = event.target.closest(".lock-button");
@@ -85,10 +90,25 @@ palette.addEventListener("click", (event) => {
     renderPalette();
 });
 
-generateButton.addEventListener("click", () => {
-    palette.textContent = "¡Has generado una paleta!"
-    generatePalette()
-});
+function updateStyleVisibility() {
+
+    console.log("seleccionaste:", harmony.value);
+
+    const styleSetting = style.parentElement;
+
+    if (harmony.value === "random") {
+        styleSetting.setAttribute("hidden", "");
+    } else {
+        styleSetting.removeAttribute("hidden");
+    }
+
+}
+
+harmony.addEventListener("change", updateStyleVisibility);
+
+updateStyleVisibility();
+
+
 
 palette.addEventListener("click", (event) => {
     const button = event.target.closest(".color-code");
@@ -98,14 +118,27 @@ palette.addEventListener("click", (event) => {
     navigator.clipboard.writeText(button.dataset.color);
 });
 
+generateButton.addEventListener("click", () => {
+    palette.textContent = "¡Has generado una paleta!"
+    generatePalette()
+});
+
+glitterToggle.addEventListener("change", () => {
+
+    palette.classList.toggle(
+        "glitter",
+        glitterToggle.checked
+    );
+    renderPalette()
+
+});
 
 
 
 
 
-
-
-//esta funcion hace que hue sea una funcion periodica de 2π 
+//FUNCIONES PARA PALETAS ARMÓNICAS
+//normalizeHue hace que hue sea una funcion periodica de 2π 
 function normalizeHue(hue) {
     return (hue + 360) % 360
 }
@@ -156,10 +189,7 @@ function splitComplementary(baseHue) {
     ];
 }
 
-function random(paletteSize) {
-    return generateRandomColors(paletteSize);
 
-}
 
 //todas las reglas armónicas están en este objeto para fácil acceso. 
 const harmonyRules = {
@@ -170,49 +200,6 @@ const harmonyRules = {
     triadic: triadic,
     tetradic: tetradic
 };
-
-
-
-//FUNCIONES DE CONVERSION
-//recibe 3 numeros, devuelve una lista con 3 elementos
-function hslToRgb(h, s, l) {
-    s /= 100;
-    l /= 100;
-
-    const chroma = (1 - Math.abs(2 * l - 1)) * s;
-    const huePrime = h / 60;
-
-    const channel = (n) => {
-        const k = (n + huePrime) % 6;
-        return chroma * Math.max(
-            0,
-            Math.min(k, 4 - k, 1)
-        );
-    };
-
-    const m = l - chroma / 2;
-
-    const r = Math.round((channel(0) + m) * 255);
-    const g = Math.round((channel(4) + m) * 255);
-    const b = Math.round((channel(2) + m) * 255);
-
-    return [r, g, b];
-}
-
-
-//recibe 3 numeros, devuelve un string
-function rgbToHex(r, g, b) {
-    const rgb = [r, g, b];
-    const hex = [];
-    for (let i = 0; i < rgb.length; i++) {
-        const current = rgb[i].toString(16).padStart(2, "0");
-        hex.push(current)
-    }
-    return `#${hex.join("")}`;
-}
-
-
-
 
 //restricciones relacionadas con el estilo
 const styleRules = {
@@ -239,6 +226,47 @@ const styleRules = {
         lightness: [40, 70]
     }
 };
+
+
+
+//FUNCIONES DE CONVERSION
+//recibe 3 numeros hue, saturation, lightness y devuelve una lista con 3 elementos r, g y b
+function hslToRgb(h, s, l) {
+    s /= 100;
+    l /= 100;
+
+    const chroma = (1 - Math.abs(2 * l - 1)) * s;
+    const huePrime = h / 60;
+
+    const channel = (n) => {
+        const k = (n + huePrime) % 6;
+        return chroma * Math.max(
+            0,
+            Math.min(k, 4 - k, 1)
+        );
+    };
+
+    const m = l - chroma / 2;
+
+    const r = Math.round((channel(0) + m) * 255);
+    const g = Math.round((channel(4) + m) * 255);
+    const b = Math.round((channel(2) + m) * 255);
+
+    return [r, g, b];
+}
+
+
+//recibe 3 numeros r, g y b y devuelve un string que es el valor de los tres números recibidos convertidos a hexadecimal
+function rgbToHex(r, g, b) {
+    const rgb = [r, g, b];
+    const hex = [];
+    for (let i = 0; i < rgb.length; i++) {
+        const current = rgb[i].toString(16).padStart(2, "0");
+        hex.push(current)
+    }
+    return `#${hex.join("")}`;
+}
+
 
 //distributeColors elige cuantas variaciones de cada hue debemos producir para satisfacer el criterio de paletteSize
 //recibe una array de hues y un tamaño de paleta y retorna un array con la cantidad de variaciones por cada hue.
@@ -340,7 +368,13 @@ function renderPalette() {
 
                 <div 
                     class="color-preview"
-                    style="background-color: ${color.hsl}">
+                    style="background-color: ${color.hsl}"
+                    >
+                    ${glitterToggle.checked ? `
+                        <div class="sparkles" aria-hidden="true">
+                            ${generateSparkles()}
+                        </div>
+                    ` : ""}
                 </div>
 
                 <div class="color-info">
@@ -383,6 +417,45 @@ function renderPalette() {
     palette.innerHTML = colorCards.join("");
 }
 
+
+
+//parametros de brillantina para puntos extra
+function generateSparkles(amount = 20) {
+
+    const sparkles = [];
+
+    for (let i = 0; i < amount; i++) {
+
+        const x = randomInRange(5, 95);
+        const y = randomInRange(5, 95);
+
+        const size = randomInRange(10, 25) / 100;
+
+        const duration = randomInRange(12, 30) / 10;
+
+        const delay = -(Math.random() * duration);
+
+        const maxOpacity = (
+            randomInRange(5, 10) / 10
+        ).toFixed(1);
+
+        sparkles.push(`
+            <span
+                class="sparkle"
+                style="
+                    --x: ${x}%;
+                    --y: ${y}%;
+                    --size: ${size}rem;
+                    --duration: ${duration}s;
+                    --delay: ${delay}s;
+                    --max-opacity: ${maxOpacity};
+                "
+            ></span>
+        `);
+    }
+
+    return sparkles.join("");
+}
 //console.log(distributeColors(8, [240, 30, 90]));
 //console.log(distributeColors(6, [240, 30, 90]));
 //console.log(distributeColors(9, [240, 30, 90]));

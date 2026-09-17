@@ -200,22 +200,31 @@ select:focus-visible {
 }
 
 .color-preview {
+  position: relative;
   flex: 1;
-  min-height: 12rem;
+  min-height: 16rem;
 }
 
 .color-code {
   width: 100%;
 
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 0.75rem;
 
   background-color: var(--surface);
 
   font-family: monospace;
-  font-size: 1rem;
+  font-size: 0.875rem;
   font-weight: bold;
 
   text-align: left;
+
+  overflow-wrap: anywhere;
+}
+
+.color-info {
+  display: flex;
+  flex-direction: column;
+  padding: 0.25rem;
 }
 
 /* =========================
@@ -279,5 +288,66 @@ footer {
 
   #palette {
     grid-template-columns: 1fr;
+  }
+}
+
+/* 
+hace que estilo desaparezca cuando harmony === "random"y ninguna regla de display pueda sobreescribirlo
+*/
+[hidden] {
+  display: none !important;
+}
+
+/* =========================
+   EFECTO BRILLANTINA
+   ========================= */
+
+.color-preview {
+  position: relative;
+}
+
+.sparkles {
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+}
+
+.sparkle {
+  position: absolute;
+
+  left: var(--x);
+  top: var(--y);
+
+  width: var(--size);
+  aspect-ratio: 1;
+
+  border-radius: 50%;
+
+  background-color: white;
+
+  opacity: 0;
+
+  transform: scale(0.5);
+
+  animation: sparkle var(--duration) ease-in-out infinite;
+
+  animation-delay: var(--delay);
+}
+
+@keyframes sparkle {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+
+  50% {
+    opacity: var(--max-opacity);
+    transform: scale(1.25);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(0.5);
   }
 }
