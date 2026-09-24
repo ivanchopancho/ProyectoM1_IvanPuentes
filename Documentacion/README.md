@@ -12,27 +12,17 @@ El proyecto fue desarrollado desde cero utilizando HTML, CSS y JavaScript, sin f
 
 ### Monocromática
 
-![Armonía monocromática](images/monochromatic.png)
-
 ### Análoga
-
-![Armonía análoga](images/analogous.png)
 
 ### Complementaria
 
-![Armonía complementaria](images/complementary.png)
-
 ### Split-complementaria
-
-![Armonía split-complementaria](images/split-complementary.png)
 
 ### Triádica
 
-![Armonía triádica](images/triadic.png)
-
 ### Tetrádica
 
-![Armonía tetrádica](images/tetradic.png)
+(images\34524605-eb08-46ee-a984-2b9493c4e68c.png)
 
 - Diferentes estilos visuales:
   - Vibrante
@@ -91,7 +81,7 @@ git clone https://github.com/ivanchopancho/ProyectoM1_IvanPuentes
 ### 2. Entrar en la carpeta
 
 ```bash
-cd color-palette
+cd Desarrollo
 ```
 
 ### 3. Abrir la aplicación
