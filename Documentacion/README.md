@@ -22,7 +22,7 @@ El proyecto fue desarrollado desde cero utilizando HTML, CSS y JavaScript, sin f
 
 ### Tetrádica
 
-(images\34524605-eb08-46ee-a984-2b9493c4e68c.png)
+![](images\34524605-eb08-46ee-a984-2b9493c4e68c.png)
 
 - Diferentes estilos visuales:
   - Vibrante
